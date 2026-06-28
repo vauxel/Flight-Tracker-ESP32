@@ -36,7 +36,7 @@ TaskHandle_t fetching_task;
 MatrixPanel_I2S_DMA *display = nullptr;
 uint16_t color_black, color_white, color_red, color_green, color_blue;
 unsigned long last_fetch = 0;
-unsigned long fetch_delay = 2500;
+unsigned long fetch_delay = 3000;
 char* no_flights_text = "NONE";
 char* flight_data = NULL;
 char* flight_id = NULL;
@@ -309,6 +309,8 @@ void fetch_flight() {
   HTTPClient http;
   http.begin(FLIGHT_URL);
   http.addHeader("X-User-Id", USER_ID);
+  http.setTimeout(1000);
+  http.setConnectTimeout(1000);
   int response_code = http.GET();
 
   if (response_code > 0) {
@@ -317,7 +319,7 @@ void fetch_flight() {
       Serial.print("Successfully fetch flight data: ");
       Serial.println(payload);
 
-      flight_data = (char*)malloc(strlen(payload) + 1); 
+      flight_data = (char*)malloc(strlen(payload) + 1);
       strcpy(flight_data, payload);
 
       char* token = strtok(flight_data, ":");
